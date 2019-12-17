@@ -1,0 +1,19 @@
+{
+    "name": "simple-node-server",
+    "version": "1.0.0",
+    "description": "Simple and slim HTTP server for Node.js",
+    "main": "app.js",
+    "scripts": {
+        "start": "node app.js"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/jakecyr/simple-nodejs-server.git"
+    },
+    "author": "Jake Cyr",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/jakecyr/simple-nodejs-server/issues"
+    },
+    "homepage": "https://github.com/jakecyr/simple-nodejs-server#readme"
+}

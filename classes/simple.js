@@ -1,7 +1,10 @@
 const http = require('http');
 
 function Simple(log) {
-    let routes = {};
+    let routes = {
+        GET: {},
+        POST: {},
+    };
 
     function extendResponse(response) {
         response.json = (json, statusCode = 200) => {
@@ -37,8 +40,10 @@ function Simple(log) {
                 extendRequest(request);
                 extendResponse(response);
 
-                if (routes[url]) {
-                    routes[url](request, response);
+                const methodRoutes = routes[method];
+
+                if (methodRoutes && methodRoutes[url]) {
+                    methodRoutes[url](request, response);
                 } else {
                     response.json({ error: true, message: 'No route found' })
                 }
@@ -46,11 +51,16 @@ function Simple(log) {
             .listen(port, host, onListen)
     }
     function get(path, handler) {
-        routes[path] = handler;
+        routes.GET[path] = handler;
+        return this;
+    }
+    function post(path, handler) {
+        routes.POST[path] = handler;
         return this;
     }
 
     this.get = get;
+    this.post = post;
     this.listen = listen;
 }
 
