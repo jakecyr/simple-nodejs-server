@@ -1,5 +1,5 @@
-// import Simple framework
-const Simple = require('./classes/simple');
+
+const { Simple } = require('../dist/');
 
 const port = process.env.PORT || 8080;
 const host = '0.0.0.0';
@@ -7,14 +7,12 @@ const host = '0.0.0.0';
 // create new simple server with logging
 let app = new Simple(true);
 
-function log(req, res, next) {
-    console.log('LOG', req.url);
-    next();
-}
-
 app
-    .get('/', log, (req, res) => {
+    .get('/', (req, res) => {
         res.end('start route');
+    })
+    .get('/json-test', (req, res) => {
+        res.json({ test: 'test' });
     })
     .post('/', (req, res) => {
         res.end('post data here')
