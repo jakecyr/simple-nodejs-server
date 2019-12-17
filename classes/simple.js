@@ -37,8 +37,6 @@ function Simple(log) {
                 extendRequest(request);
                 extendResponse(response);
 
-                console.log(request.getQueryString())
-
                 if (routes[url]) {
                     routes[url](request, response);
                 } else {
