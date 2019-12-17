@@ -1,7 +1,6 @@
 const http = require('http');
 
 function Simple(log) {
-    let server = null;
     let routes = {
         GET: {},
         POST: {},
@@ -68,17 +67,29 @@ function Simple(log) {
         const methodRoutes = routes[method];
 
         if (methodRoutes && methodRoutes[url]) {
-            methodRoutes[url](req, res);
+            runHandlers(req, res, [...methodRoutes[url]]);
         } else {
-            res.json({ success: false, result: `No ${method} route found matching ${url}` }, 404);
+            res
+                .writeHead(404, { 'Content-Type': 'application/json' })
+                .end(JSON.stringify({ success: false, result: `No ${method} route found matching ${url}` }))
+        }
+    }
+    function runHandlers(req, res, handlers) {
+        if (handlers && handlers.length > 0) {
+            const handler = handlers.shift();
+
+            if (handlers.length == 0) {
+                handler(req, res);
+            } else {
+                handler(req, res, () => runHandlers(req, res, handlers));
+            }
         }
     }
     /**
      * Create a new http server
      */
     function createServer() {
-        server = http.createServer(handleRequest);
-        return server;
+        return http.createServer(handleRequest);
     }
     /**
      * Start the server listening on the specified port / host
@@ -87,7 +98,7 @@ function Simple(log) {
      * @param {Function} onListen Callback function once the server is listening
      */
     function listen(port, host, onListen) {
-        if (!server) createServer();
+        const server = createServer();
         server.listen(port, host, onListen);
     }
 
@@ -97,47 +108,54 @@ function Simple(log) {
      * Handle a specified request type
      * @param {string} type Type of http request
      * @param {string} path Route to handle
-     * @param {Function} handler Handler function for the route with (req, res) params
+     * @param {Function[]} handlers Handler functions for the route with (req, res) params
      */
-    function request(type, path, handler) {
-        routes[type][path] = handler;
+    function request(type, path, handlers) {
+        routes[type][path] = handlers;
         return this;
     }
-    /**
-     * Handle a GET request
-     * @param {string} path Route to handle
-     * @param {Function} handler Handler function for the route with (req, res) params
-     */
-    function get(path, handler) {
-        request('GET', path, handler);
+    function addRequest(type, args) {
+        let path = null;
+        let handlers = [];
+
+        if (args.length == 2 && typeof args[0] == 'string' && typeof args[1] == 'function') {
+            path = args[0];
+            handlers.push(args[1]);
+        } else if (args.length > 2 && typeof args[0] == 'string') {
+            path = args[0];
+
+            for (let i = 1; i < args.length; i++) {
+                if (typeof args[i] == 'function') {
+                    handlers.push(args[i]);
+                } else {
+                    throw new Error('Argument after path is not a function');
+                }
+            }
+        } else {
+            throw new Error('Invalid arguments');
+        }
+
+        if (path && handlers.length > 0) {
+            request(type, path, handlers);
+        } else {
+            throw new Error(`Must specify a path and at least one route handler`);
+        }
+
+    }
+    function get(...args) {
+        addRequest('GET', args);
         return this;
     }
-    /**
-     * Handle a port request
-     * @param {string} path Route to handle
-     * @param {Function} handler Handler function for the route with (req, res) params
-     */
-    function post(path, handler) {
-        request('POST', path, handler);
-        routes.POST[path] = handler;
+    function post(...args) {
+        addRequest('POST', args);
         return this;
     }
-    /**
-     * Handle a PUT request
-     * @param {string} path Route to handle
-     * @param {Function} handler Handler function for the route with (req, res) params
-     */
-    function put(path, handler) {
-        request('PUT', path, handler);
+    function put(...args) {
+        addRequest('PUT', args);
         return this;
     }
-    /**
-     * Handle a DELETE request
-     * @param {string} path Route to handle
-     * @param {Function} handler Handler function for the route with (req, res) params
-     */
-    function deleteRequest(path, handler) {
-        request('DELETE', path, handler);
+    function deleteRequest(...args) {
+        addRequest('DELETE', args);
         return this;
     }
 }
