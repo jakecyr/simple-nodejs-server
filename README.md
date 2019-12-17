@@ -11,7 +11,7 @@ After installing installing the framework, create a new instance of `Simple` and
 
 ```javascript
 // import simple framework
-const Simple = require('./classes/simple');
+const { Simple } = require('../dist/');
 
 // create new simple server with logging
 let app = new Simple(true);
