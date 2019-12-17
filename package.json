@@ -1,7 +1,7 @@
 {
     "name": "simple-node-server",
     "version": "1.0.0",
-    "description": "Simple and slim HTTP server for Node.js",
+    "description": "Simple and slim Node.js HTTP server",
     "main": "app.js",
     "scripts": {
         "start": "node app.js"
