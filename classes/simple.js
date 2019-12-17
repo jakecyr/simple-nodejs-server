@@ -70,7 +70,7 @@ function Simple(log) {
         if (methodRoutes && methodRoutes[url]) {
             methodRoutes[url](req, res);
         } else {
-            res.json({ success: false, result: `No ${method} route found matching ${url}` })
+            res.json({ success: false, result: `No ${method} route found matching ${url}` }, 404);
         }
     }
     /**
