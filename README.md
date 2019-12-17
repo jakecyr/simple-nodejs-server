@@ -30,7 +30,11 @@ app
 
 ### Middleware
 
-All request types support middleware functions. The last function must end the response. Example:
+* All request types support middleware functions
+* The last function must end the response
+* All route handler functions are executed in the order they are specified
+
+Example:
 ```javascript
 function log(req, res, next) {
     console.log('LOG VISIT', req.url);
