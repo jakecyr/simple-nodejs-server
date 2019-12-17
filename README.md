@@ -28,6 +28,21 @@ app
     });
 ```
 
+### Middleware
+
+All request types support middleware functions. The last function must end the response. Example:
+```javascript
+function log(req, res, next) {
+    console.log('LOG VISIT', req.url);
+    next();
+}
+
+// add middleware to log page url visited to server console
+app.get('/', log, (req, res) => {
+    res.end('Visit has been logged');
+});
+```
+
 ### Query Parameters
 
 Parse query parameters as needed using the `request` object in a handler function. Example:
