@@ -49,7 +49,7 @@ Parse query parameters as needed using the `request` object in a handler functio
 
 ```javascript
 app.get('/echo-name', (req, res) => {
-    const queryParams = req.getQueryString();
+    const queryParams = req.query();
     res.end(queryParams.name);
 })
 ```

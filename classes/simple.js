@@ -37,20 +37,25 @@ function Simple(log) {
      * @param {object} request Http request object
      */
     function extendRequest(request) {
-        request.getQueryString = () => {
-            const values = request.url.split('?');
-            const queryObj = {};
+        request.query = () => parseQueryString(request.url);
+    }
+    /**
+     * Takes a url and returns an object with the query string key/value pairs
+     * @param {*} url
+     */
+    function parseQueryString(url) {
+        const values = url.split('?');
+        const queryObj = {};
 
-            for (let value of values) {
-                const pieces = value.split('=');
+        for (let value of values) {
+            const pieces = value.split('=');
 
-                if (pieces && pieces.length == 2) {
-                    queryObj[pieces[0]] = pieces[1];
-                }
+            if (pieces && pieces.length == 2) {
+                queryObj[pieces[0]] = pieces[1];
             }
+        }
 
-            return queryObj;
-        };
+        return queryObj;
     }
     /**
      * Handle an incoming request
@@ -61,17 +66,19 @@ function Simple(log) {
         const { method, url } = req;
         if (log) console.log(`${method} ${url}`);
 
+        const baseUrl = url.split('?')[0];
+
         extendRequest(req);
         extendResponse(res);
 
         const methodRoutes = routes[method];
 
-        if (methodRoutes && methodRoutes[url]) {
-            runHandlers(req, res, [...methodRoutes[url]]);
+        if (methodRoutes && methodRoutes[baseUrl]) {
+            runHandlers(req, res, [...methodRoutes[baseUrl]]);
         } else {
             res
                 .writeHead(404, { 'Content-Type': 'application/json' })
-                .end(JSON.stringify({ success: false, result: `No ${method} route found matching ${url}` }))
+                .end(JSON.stringify({ success: false, result: `No ${method} route found matching ${baseUrl}` }))
         }
     }
     function runHandlers(req, res, handlers) {
