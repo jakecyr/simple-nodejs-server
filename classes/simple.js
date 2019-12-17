@@ -12,12 +12,29 @@ function Simple(log) {
 
         return response;
     }
+    function extendRequest(request) {
+        request.getQueryString = () => {
+            const values = request.url.split('?');
+            const queryObj = {};
+
+            for (let value of values) {
+                const pieces = value.split('=');
+
+                if (pieces && pieces.length == 2) {
+                    queryObj[pieces[0]] = pieces[1];
+                }
+            }
+
+            return queryObj;
+        };
+    }
     function listen(port, host, onListen) {
         http
             .createServer((request, response) => {
                 const { method, url } = request;
                 if (log) console.log(`${method} ${url}`);
 
+                extendRequest(request);
                 extendResponse(response);
 
                 if (routes[url]) {
