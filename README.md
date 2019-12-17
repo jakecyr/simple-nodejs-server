@@ -1,11 +1,11 @@
 # Simple Node.js HTTP Server
 
-# Installation
+## Installation
 
 * Clone this repo
 * Require the `simple.js` file
 
-# Usage
+## Usage
 
 After installing installing the framework, create a new instance of `Simple` and start creating your server:
 
@@ -26,4 +26,15 @@ app
     .listen(8080, '0.0.0.0', () => {
         console.log('Listening');
     });
+```
+
+### Query Parameters
+
+Parse query parameters as needed using the `request` object in a handler function. Example:
+
+```javascript
+app.get('/echo-name', (req, res) => {
+    const queryParams = req.getQueryString();
+    res.end(queryParams.name);
+})
 ```
