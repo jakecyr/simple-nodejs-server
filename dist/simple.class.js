@@ -1,0 +1,148 @@
+"use strict";
+exports.__esModule = true;
+var http_1 = require("http");
+var Simple = (function () {
+    function Simple(log) {
+        this.log = log;
+        this.routes = {
+            GET: {},
+            POST: {},
+            PUT: {},
+            DELETE: {}
+        };
+    }
+    Simple.prototype.listen = function (port, host, onListen) {
+        this.createNewServer().listen(port, host, null, onListen);
+    };
+    Simple.prototype.request = function (type) {
+        var args = [];
+        for (var _i = 1; _i < arguments.length; _i++) {
+            args[_i - 1] = arguments[_i];
+        }
+        this.addRequest(type, args.slice());
+        return this;
+    };
+    Simple.prototype.get = function () {
+        var args = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+            args[_i] = arguments[_i];
+        }
+        this.addRequest('GET', args);
+        return this;
+    };
+    Simple.prototype.post = function () {
+        var args = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+            args[_i] = arguments[_i];
+        }
+        this.addRequest('POST', args);
+        return this;
+    };
+    Simple.prototype.put = function () {
+        var args = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+            args[_i] = arguments[_i];
+        }
+        this.addRequest('PUT', args);
+        return this;
+    };
+    Simple.prototype["delete"] = function () {
+        var args = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+            args[_i] = arguments[_i];
+        }
+        this.addRequest('DELETE', args);
+        return this;
+    };
+    Simple.prototype.parseQueryString = function (url) {
+        var values = url.split('?');
+        var queryObj = {};
+        for (var _i = 0, values_1 = values; _i < values_1.length; _i++) {
+            var value = values_1[_i];
+            var pieces = value.split('=');
+            if (pieces && pieces.length == 2) {
+                queryObj[pieces[0]] = pieces[1];
+            }
+        }
+        return queryObj;
+    };
+    Simple.prototype.handleRequest = function (req, res) {
+        console.log('REQUEST');
+        var method = req.method, url = req.url;
+        if (this.log)
+            console.log(method + " " + url);
+        var baseUrl = url.split('?')[0];
+        this.extendRequest(req);
+        this.extendResponse(res);
+        var methodRoutes = this.routes[method];
+        if (methodRoutes && methodRoutes[baseUrl]) {
+            this.runHandlers(req, res, methodRoutes[baseUrl].slice());
+        }
+        else {
+            res
+                .writeHead(404, { 'Content-Type': 'application/json' })
+                .end(JSON.stringify({ success: false, result: "No " + method + " route found matching " + baseUrl }));
+        }
+    };
+    Simple.prototype.runHandlers = function (req, res, handlers) {
+        var _this = this;
+        if (handlers && handlers.length > 0) {
+            var handler = handlers.shift();
+            if (handlers.length == 0) {
+                handler(req, res);
+            }
+            else {
+                handler(req, res, function () { return _this.runHandlers(req, res, handlers); });
+            }
+        }
+    };
+    Simple.prototype.createNewServer = function () {
+        var _this = this;
+        return http_1.createServer(function (req, res) {
+            _this.handleRequest(req, res);
+        });
+    };
+    Simple.prototype.addRequest = function (type, args) {
+        var path = null;
+        var handlers = [];
+        if (args.length == 2 && typeof args[0] == 'string' && typeof args[1] == 'function') {
+            path = args[0];
+            handlers.push(args[1]);
+        }
+        else if (args.length > 2 && typeof args[0] == 'string') {
+            path = args[0];
+            for (var i = 1; i < args.length; i++) {
+                if (typeof args[i] == 'function') {
+                    handlers.push(args[i]);
+                }
+                else {
+                    throw new Error('Argument after path is not a function');
+                }
+            }
+        }
+        else {
+            throw new Error('Invalid arguments');
+        }
+        if (path && handlers.length > 0) {
+            this.routes[type][path] = handlers;
+        }
+        else {
+            throw new Error("Must specify a path and at least one route handler");
+        }
+    };
+    Simple.prototype.extendResponse = function (response) {
+        response.json = function (json, statusCode) {
+            if (statusCode === void 0) { statusCode = 200; }
+            response
+                .writeHead(statusCode, { 'Content-Type': 'application/json' })
+                .end(JSON.stringify(json));
+        };
+        return response;
+    };
+    Simple.prototype.extendRequest = function (request) {
+        var _this = this;
+        request.query = function () { return _this.parseQueryString(request.url); };
+    };
+    return Simple;
+}());
+exports.Simple = Simple;

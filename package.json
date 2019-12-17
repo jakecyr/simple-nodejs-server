@@ -2,7 +2,7 @@
     "name": "simple-node-server",
     "version": "1.0.0",
     "description": "Simple and slim Node.js HTTP server",
-    "main": "app.js",
+    "main": "node classes/simple.js",
     "scripts": {
         "start": "node app.js"
     },
@@ -15,5 +15,8 @@
     "bugs": {
         "url": "https://github.com/jakecyr/simple-nodejs-server/issues"
     },
-    "homepage": "https://github.com/jakecyr/simple-nodejs-server#readme"
+    "homepage": "https://github.com/jakecyr/simple-nodejs-server#readme",
+    "devDependencies": {
+        "@types/node": "^12.12.20"
+    }
 }
