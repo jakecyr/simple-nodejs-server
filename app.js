@@ -1,3 +1,4 @@
+// import Simple framework
 const Simple = require('./classes/simple');
 
 // create new simple server with logging
