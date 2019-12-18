@@ -68,11 +68,15 @@ class Simple {
             });
 
             request.on('end', () => {
-                try {
-                    const payload = JSON.parse(Object.keys(parseBody(body))[0]);
-                    resolve(payload);
-                } catch (e) {
-                    reject(e);
+                if (body) {
+                    try {
+                        const payload = JSON.parse(Object.keys(parseBody(body))[0]);
+                        resolve(payload);
+                    } catch (e) {
+                        reject('Error: Invalid JSON in request body');
+                    }
+                } else {
+                    resolve({});
                 }
             });
         })

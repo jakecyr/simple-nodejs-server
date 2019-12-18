@@ -84,12 +84,17 @@ var Simple = (function () {
                 }
             });
             request.on('end', function () {
-                try {
-                    var payload = JSON.parse(Object.keys(querystring_1.parse(body))[0]);
-                    resolve(payload);
+                if (body) {
+                    try {
+                        var payload = JSON.parse(Object.keys(querystring_1.parse(body))[0]);
+                        resolve(payload);
+                    }
+                    catch (e) {
+                        reject('Error: Invalid JSON in request body');
+                    }
                 }
-                catch (e) {
-                    reject(e);
+                else {
+                    resolve({});
                 }
             });
         });
