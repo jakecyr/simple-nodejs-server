@@ -71,3 +71,16 @@ app.post('/', async (req, res) => {
     res.json(payload);
 })
 ```
+
+
+### Router
+
+Routes can be imported from other files to reduce file size. Example:
+
+```javascript
+let app = new Simple(true);
+
+app
+    .addRoutes('/api', require('./routes/'))
+    .listen(8080, '0.0.0.0', () => console.log('Server listening'));
+```

@@ -46,7 +46,7 @@ class Simple {
     getRoutes(): SimpleRoutes {
         return this.routes;
     }
-    addRoutes(prefix: string, router: Simple): void {
+    addRoutes(prefix: string, router: Simple): Simple {
         const newRoutes = router.getRoutes();
 
         for (let method in newRoutes) {
@@ -55,9 +55,11 @@ class Simple {
                 this.routes[method][path] = newRoutes[method][url];
             }
         }
+
+        return this;
     }
-    createRouter(): Simple {
-        return new Simple(this.log);
+    static createRouter(log?: boolean): Simple {
+        return new Simple(log);
     }
     private parseQueryString(url: string): object {
         const values = url.split('?');
@@ -155,7 +157,7 @@ class Simple {
             throw new Error('Invalid arguments');
         }
 
-        if (path && handlers.length > 0) {
+        if (path !== undefined && path !== null && handlers.length > 0) {
             this.routes[type][path] = handlers;
         } else {
             throw new Error(`Must specify a path and at least one route handler`);
