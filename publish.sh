@@ -1,3 +1,3 @@
 npm version patch
 npm pack
-npm publish jakecyr*.tgz --access public
+npm publish slim*.tgz --access public
