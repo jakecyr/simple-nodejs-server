@@ -1,6 +1,10 @@
 import { createServer, Server } from 'http';
 import { parse as parseBody } from 'querystring';
+import { readFile, exists } from 'fs';
 
+import { resolve as resolvePath, normalize as normalizePath, join as joinPath } from 'path';
+
+import { EXT_CONTENT_TYPE } from './file-ext.object';
 import { SimpleRequest } from './simple-request.interface';
 import { SimpleResponse } from './simple-response.interface';
 import { HandlerFunction } from './handler-function.type';
@@ -16,6 +20,8 @@ class Simple {
     };
 
     private log: boolean;
+    private staticFilePath: string;
+    private middleware: HandlerFunction[] = [];
 
     constructor(log: boolean) {
         this.log = log;
@@ -56,6 +62,41 @@ class Simple {
             }
         }
 
+        return this;
+    }
+    static serveStatic(dirPath: string): HandlerFunction {
+        return (req, res, next) => {
+            const resolvedBase = resolvePath(dirPath);
+            const safeSuffix = normalizePath(req.url).replace(/^(\.\.[\/\\])+/, '');
+            const fileLoc = joinPath(resolvedBase, safeSuffix);
+
+            exists(fileLoc, (fileExists: boolean) => {
+                if (fileExists) {
+                    readFile(fileLoc, (err, data) => {
+                        if (err) {
+                            next();
+                        } else {
+                            const fileData = data.toString();
+                            const fileExtension = safeSuffix.split('.').pop();
+                            const contentType: string = EXT_CONTENT_TYPE[fileExtension];
+
+                            if (contentType) {
+                                res
+                                    .writeHead(200, { 'Content-Type': contentType })
+                                    .end(fileData);
+                            } else {
+                                res.end(fileData);
+                            }
+                        }
+                    })
+                } else {
+                    next();
+                }
+            });
+        }
+    }
+    use(handler: HandlerFunction): Simple {
+        this.middleware.push(handler);
         return this;
     }
     static createRouter(log?: boolean): Simple {
@@ -110,25 +151,23 @@ class Simple {
         this.extendRequest(req);
         this.extendResponse(res);
 
+        let matchedRouteHandlers = null;
         const methodRoutes = this.routes[method];
 
         if (methodRoutes && methodRoutes[baseUrl]) {
-            this.runHandlers(req, res, [...methodRoutes[baseUrl]]);
-        } else {
-            res
-                .writeHead(404, { 'Content-Type': 'application/json' })
-                .end(JSON.stringify({ success: false, result: `No ${method} route found matching ${baseUrl}` }))
+            matchedRouteHandlers = methodRoutes[baseUrl]
         }
+
+        this.runHandlers(req, res, [...this.middleware, ...(matchedRouteHandlers || [])]);
+
+        // res
+        //     .writeHead(404, { 'Content-Type': 'application/json' })
+        //     .end(JSON.stringify({ success: false, result: `No ${method} route found matching ${baseUrl}` }))
     }
     private runHandlers(req: SimpleRequest, res: SimpleResponse, handlers: HandlerFunction[]): void {
         if (handlers && handlers.length > 0) {
             const handler = handlers.shift();
-
-            if (handlers.length == 0) {
-                handler(req, res);
-            } else {
-                handler(req, res, () => this.runHandlers(req, res, handlers));
-            }
+            handler(req, res, () => this.runHandlers(req, res, handlers));
         }
     }
     private createNewServer(): Server {
@@ -164,9 +203,9 @@ class Simple {
         }
     }
     private extendResponse(response: SimpleResponse): SimpleResponse {
-        response.json = (json: object, statusCode: number = 200) => {
+        response.json = (json: object, statusCode?: number) => {
             response
-                .writeHead(statusCode, { 'Content-Type': 'application/json' })
+                .writeHead(statusCode || 200, { 'Content-Type': 'application/json' })
                 .end(JSON.stringify(json))
         };
 
