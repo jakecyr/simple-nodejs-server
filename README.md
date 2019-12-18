@@ -1,8 +1,8 @@
-# Simple Node.js HTTP Server
+# Slim Node.js HTTP Server
 
 ## Installation
 
-* Install the npm package `npm install @jakecyr/simple-node-server`
+* Install the npm package `npm install @jakecyr/slim-node-server`
 * Import the module to your project (see example below)
 
 ## Usage
