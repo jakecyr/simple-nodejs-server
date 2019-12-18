@@ -16,8 +16,11 @@ class Simple {
         DELETE: {},
     };
 
-    constructor(private log: boolean) { }
+    log: boolean;
 
+    constructor(log: boolean) {
+        this.log = log;
+    }
     listen(port: number, host: string, onListen: () => void) {
         this.createNewServer().listen(port, host, null, onListen);
     }

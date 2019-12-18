@@ -10,13 +10,13 @@ var http_1 = require("http");
 var querystring_1 = require("querystring");
 var Simple = (function() {
     function Simple(log) {
-        this.log = log;
         this.routes = {
             GET: {},
             POST: {},
             PUT: {},
             DELETE: {}
         };
+        this.log = log;
     }
     Simple.prototype.listen = function(port, host, onListen) {
         this.createNewServer().listen(port, host, null, onListen);
