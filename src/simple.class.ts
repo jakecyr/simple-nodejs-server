@@ -1,6 +1,6 @@
 import { createServer, Server } from 'http';
 import { parse as parseBody } from 'querystring';
-import { readFile, exists } from 'fs';
+import { readFile, exists, stat as fileStat, stat } from 'fs';
 
 import { resolve as resolvePath, normalize as normalizePath, join as joinPath } from 'path';
 
@@ -68,27 +68,39 @@ class Simple {
         return (req, res, next) => {
             const resolvedBase = resolvePath(dirPath);
             const safeSuffix = normalizePath(req.url).replace(/^(\.\.[\/\\])+/, '');
-            const fileLoc = joinPath(resolvedBase, safeSuffix);
+            let fileLoc = joinPath(resolvedBase, safeSuffix);
 
             exists(fileLoc, (fileExists: boolean) => {
                 if (fileExists) {
-                    readFile(fileLoc, (err, data) => {
-                        if (err) {
-                            next();
-                        } else {
-                            const fileData = data.toString();
-                            const fileExtension = safeSuffix.split('.').pop();
-                            const contentType: string = EXT_CONTENT_TYPE[fileExtension];
-
-                            if (contentType) {
-                                res
-                                    .writeHead(200, { 'Content-Type': contentType })
-                                    .end(fileData);
-                            } else {
-                                res.end(fileData);
-                            }
+                    fileStat(fileLoc, (err, stats) => {
+                        if(err){
+                            // handle
                         }
+
+                        if (stats.isDirectory()) {
+                            fileLoc += 'index.html';
+                        }
+
+                        readFile(fileLoc, (err, data) => {
+                            if (err) {
+                                next();
+                            } else {
+                                const fileData = data.toString();
+                                const fileExtension = safeSuffix.split('.').pop();
+                                const contentType: string = EXT_CONTENT_TYPE[fileExtension];
+
+                                if (contentType) {
+                                    res
+                                        .writeHead(200, { 'Content-Type': contentType })
+                                        .end(fileData);
+                                } else {
+                                    res.end(fileData);
+                                }
+                            }
+                        })
                     })
+
+
                 } else {
                     next();
                 }
