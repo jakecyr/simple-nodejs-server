@@ -179,3 +179,4 @@ var Simple = (function () {
     return Simple;
 }());
 module.exports = Simple;
+//# sourceMappingURL=simple.class.js.map
