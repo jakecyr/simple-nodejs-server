@@ -4,7 +4,10 @@
     "description": "Simple and slim Node.js HTTP server",
     "main": "node classes/simple.js",
     "scripts": {
-        "start": "node app.js"
+        "prepublish": "npm build",
+        "build": "tsc",
+        "build:watch": "tsc -w",
+        "postbuild": "bundle-js dist/simple.class.js -o dist/bundle.js && npx minify dist/bundle.js > dist/bundle.min.js"
     },
     "repository": {
         "type": "git",
@@ -17,6 +20,9 @@
     },
     "homepage": "https://github.com/jakecyr/simple-nodejs-server#readme",
     "devDependencies": {
-        "@types/node": "^12.12.20"
+        "@types/node": "^12.12.20",
+        "@types/qs": "^6.9.0",
+        "bundle-js": "^1.0.3",
+        "minify": "^5.0.0"
     }
 }

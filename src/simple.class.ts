@@ -1,5 +1,7 @@
 
 import { createServer } from 'http';
+import { parse as parseBody } from 'querystring';
+
 import { SimpleRequest } from './simple-request.interface';
 import { SimpleResponse } from './simple-response.interface';
 import { HandlerFunction } from './handler-function.type';
@@ -39,7 +41,7 @@ class Simple {
         this.addRequest('DELETE', args);
         return this;
     }
-    private parseQueryString(url: string) {
+    private parseQueryString(url: string): object {
         const values = url.split('?');
         const queryObj: { [index: string]: string } = {};
 
@@ -53,8 +55,29 @@ class Simple {
 
         return queryObj;
     }
-    private handleRequest(req: SimpleRequest, res: SimpleResponse) {
-        console.log('REQUEST')
+    private parseBodyJSON(request: SimpleRequest): Promise<object> {
+        return new Promise((resolve: any, reject: any) => {
+            let body = '';
+
+            request.on('data', (data: string) => {
+                body += data;
+
+                if (body.length > 1e6) {
+                    reject('Too much data in request body');
+                }
+            });
+
+            request.on('end', () => {
+                try {
+                    const payload = JSON.parse(Object.keys(parseBody(body))[0]);
+                    resolve(payload);
+                } catch (e) {
+                    reject(e);
+                }
+            });
+        })
+    }
+    private handleRequest(req: SimpleRequest, res: SimpleResponse): void {
         const { method, url } = req;
         if (this.log) console.log(`${method} ${url}`);
 
@@ -127,6 +150,7 @@ class Simple {
     }
     private extendRequest(request: SimpleRequest) {
         request.query = () => this.parseQueryString(request.url);
+        request.body = () => this.parseBodyJSON(request);
     }
 }
 

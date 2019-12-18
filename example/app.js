@@ -14,14 +14,18 @@ app
     .get('/json-test', (req, res) => {
         res.json({ test: 'test' });
     })
-    .post('/', (req, res) => {
-        res.end('post data here')
+    .post('/', async (req, res) => {
+        const payload = await req.body();
+
+        console.log(payload);
+
+        res.json(payload);
     })
     .put('/', (req, res) => {
-        res.end('put data here')
+        res.json({ success: true, result: 'PUT REQUEST SUCCESS' })
     })
     .delete('/', (req, res) => {
-        res.end('delete data here')
+        res.json({ success: true, result: 'DELETE REQUEST SUCCESS' })
     })
     .listen(port, host, () => {
         console.log(`Server listening on ${host}:${port}`);
