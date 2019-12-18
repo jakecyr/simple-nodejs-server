@@ -8,7 +8,7 @@ const host = '0.0.0.0';
 let app = new Simple(true);
 
 app
-    .use(Simple.serveStatic('./public'))
+    .use(Simple.serveStatic('./public', true))
     .addRoutes('/api', require('./routes'))
     .listen(port, host, () => {
         console.log(`Server listening on ${host}:${port}`);

@@ -63,10 +63,10 @@ class Simple {
 
         return this;
     }
-    static serveStatic(dirPath: string): HandlerFunction {
+    static serveStatic(dirPath: string, indexFile?: boolean): HandlerFunction {
         return (req, res, next) => {
             const resolvedBase = resolvePath(dirPath);
-            const safeSuffix = normalizePath(req.url).replace(/^(\.\.[\/\\])+/, '');
+            let safeSuffix = normalizePath(req.url).replace(/^(\.\.[\/\\])+/, '');
             let fileLoc = joinPath(resolvedBase, safeSuffix);
 
             exists(fileLoc, (fileExists: boolean) => {
@@ -76,8 +76,9 @@ class Simple {
                             // handle
                         }
 
-                        if (stats.isDirectory()) {
+                        if (indexFile && stats.isDirectory()) {
                             fileLoc += 'index.html';
+                            safeSuffix = 'index.html';
                         }
 
                         readFile(fileLoc, (err, data) => {
@@ -96,8 +97,8 @@ class Simple {
                                     res.end(fileData);
                                 }
                             }
-                        })
-                    })
+                        });
+                    });
                 } else {
                     next();
                 }
