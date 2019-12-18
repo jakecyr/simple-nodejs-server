@@ -145,4 +145,4 @@ var Simple = (function () {
     };
     return Simple;
 }());
-exports.Simple = Simple;
+module.exports = Simple;

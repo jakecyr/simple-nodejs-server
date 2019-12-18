@@ -5,7 +5,7 @@ import { SimpleResponse } from './simple-response.interface';
 import { HandlerFunction } from './handler-function.type';
 import { SimpleRoutes } from './simple-routes.interface';
 
-export class Simple {
+class Simple {
 
     private routes: SimpleRoutes = {
         GET: {},
@@ -129,3 +129,5 @@ export class Simple {
         request.query = () => this.parseQueryString(request.url);
     }
 }
+
+module.exports = Simple;

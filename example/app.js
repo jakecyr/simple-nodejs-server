@@ -1,5 +1,5 @@
 
-const { Simple } = require('../dist/');
+const Simple = require('../dist/simple.class');
 
 const port = process.env.PORT || 8080;
 const host = '0.0.0.0';
