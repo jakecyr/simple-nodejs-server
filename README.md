@@ -2,8 +2,8 @@
 
 ## Installation
 
-* Clone this repo
-* Require the `simple.js` file
+* Install the npm package `npm install @jakecyr/simple-node-server`
+* Import the module to your project (see example below)
 
 ## Usage
 
