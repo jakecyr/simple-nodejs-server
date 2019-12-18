@@ -7,7 +7,7 @@
         "slim framework",
         "framework"
     ],
-    "main": "dist/simple.js",
+    "main": "dist/simple.class.js",
     "scripts": {
         "prepublish": "npm build",
         "build": "tsc",
