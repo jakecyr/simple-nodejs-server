@@ -16,7 +16,7 @@ class Simple {
         DELETE: {},
     };
 
-    log: boolean;
+    private log: boolean;
 
     constructor(log: boolean) {
         this.log = log;
