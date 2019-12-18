@@ -1,7 +1,12 @@
 {
-    "name": "simple-node-server",
+    "name": "@jakecyr/simple-node-server",
     "version": "1.0.2",
     "description": "Simple and slim Node.js HTTP server",
+    "keywords": [
+        "http-server",
+        "slim framework",
+        "framework"
+    ],
     "main": "node classes/simple.js",
     "scripts": {
         "prepublish": "npm build",
