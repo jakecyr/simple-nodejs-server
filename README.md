@@ -57,3 +57,17 @@ app.get('/echo-name', (req, res) => {
     res.end(queryParams.name);
 })
 ```
+
+### Body Parsing
+
+Parse a payload body as needed using the `request` object in a handler function. Example:
+
+```javascript
+app.post('/', async (req, res) => {
+    // wait for all payload data to parse
+    const payload = await req.body();
+
+    // echo back the payload to the client
+    res.json(payload);
+})
+```
