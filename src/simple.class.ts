@@ -1,5 +1,4 @@
-
-import { createServer } from 'http';
+import { createServer, Server } from 'http';
 import { parse as parseBody } from 'querystring';
 
 import { SimpleRequest } from './simple-request.interface';
@@ -21,28 +20,44 @@ class Simple {
     constructor(log: boolean) {
         this.log = log;
     }
-    listen(port: number, host: string, onListen: () => void) {
+    listen(port: number, host: string, onListen: () => void): void {
         this.createNewServer().listen(port, host, null, onListen);
     }
-    request(type: string, ...args: any[]) {
+    request(type: string, ...args: any[]): Simple {
         this.addRequest(type, [...args]);
         return this;
     }
-    get(...args: any[]) {
+    get(...args: any[]): Simple {
         this.addRequest('GET', args);
         return this;
     }
-    post(...args: any[]) {
+    post(...args: any[]): Simple {
         this.addRequest('POST', args);
         return this;
     }
-    put(...args: any[]) {
+    put(...args: any[]): Simple {
         this.addRequest('PUT', args);
         return this;
     }
-    delete(...args: any[]) {
+    delete(...args: any[]): Simple {
         this.addRequest('DELETE', args);
         return this;
+    }
+    getRoutes(): SimpleRoutes {
+        return this.routes;
+    }
+    addRoutes(prefix: string, router: Simple): void {
+        const newRoutes = router.getRoutes();
+
+        for (let method in newRoutes) {
+            for (let url in newRoutes[method]) {
+                const path = prefix + url;
+                this.routes[method][path] = newRoutes[method][url];
+            }
+        }
+    }
+    createRouter(): Simple {
+        return new Simple(this.log);
     }
     private parseQueryString(url: string): object {
         const values = url.split('?');
@@ -103,7 +118,7 @@ class Simple {
                 .end(JSON.stringify({ success: false, result: `No ${method} route found matching ${baseUrl}` }))
         }
     }
-    private runHandlers(req: SimpleRequest, res: SimpleResponse, handlers: HandlerFunction[]) {
+    private runHandlers(req: SimpleRequest, res: SimpleResponse, handlers: HandlerFunction[]): void {
         if (handlers && handlers.length > 0) {
             const handler = handlers.shift();
 
@@ -114,7 +129,7 @@ class Simple {
             }
         }
     }
-    private createNewServer() {
+    private createNewServer(): Server {
         return createServer((req: SimpleRequest, res: SimpleResponse) => {
             this.handleRequest(req, res);
         });
@@ -146,7 +161,7 @@ class Simple {
             throw new Error(`Must specify a path and at least one route handler`);
         }
     }
-    private extendResponse(response: SimpleResponse) {
+    private extendResponse(response: SimpleResponse): SimpleResponse {
         response.json = (json: object, statusCode: number = 200) => {
             response
                 .writeHead(statusCode, { 'Content-Type': 'application/json' })
@@ -155,9 +170,11 @@ class Simple {
 
         return response;
     }
-    private extendRequest(request: SimpleRequest) {
+    private extendRequest(request: SimpleRequest): SimpleRequest {
         request.query = () => this.parseQueryString(request.url);
         request.body = () => this.parseBodyJSON(request);
+
+        return request;
     }
 }
 
