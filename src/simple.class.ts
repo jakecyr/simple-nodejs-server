@@ -20,7 +20,6 @@ class Simple {
     };
 
     private log: boolean;
-    private staticFilePath: string;
     private middleware: HandlerFunction[] = [];
 
     constructor(log: boolean) {
@@ -73,7 +72,7 @@ class Simple {
             exists(fileLoc, (fileExists: boolean) => {
                 if (fileExists) {
                     fileStat(fileLoc, (err, stats) => {
-                        if(err){
+                        if (err) {
                             // handle
                         }
 
@@ -99,8 +98,6 @@ class Simple {
                             }
                         })
                     })
-
-
                 } else {
                     next();
                 }
@@ -119,7 +116,7 @@ class Simple {
         const queryObj: { [index: string]: string } = {};
 
         for (let value of values) {
-            const pieces: any[] = value.split('=');
+            const pieces: string[] = value.split('=');
 
             if (pieces && pieces.length == 2) {
                 queryObj[pieces[0]] = pieces[1];
