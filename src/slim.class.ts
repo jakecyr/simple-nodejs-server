@@ -18,12 +18,8 @@ class Slim {
         DELETE: {},
     };
 
-    private log: boolean;
     private middleware: HandlerFunction[] = [];
 
-    constructor(log: boolean) {
-        this.log = log;
-    }
     listen(port: number, host: string, onListen: () => void): void {
         this.createNewServer().listen(port, host, null, onListen);
     }
@@ -60,6 +56,10 @@ class Slim {
             }
         }
 
+        return this;
+    }
+    use(handler: HandlerFunction): Slim {
+        this.middleware.push(handler);
         return this;
     }
     static serveStatic(dirPath: string, indexFile?: boolean): HandlerFunction {
@@ -99,17 +99,14 @@ class Slim {
                         });
                     });
                 } else {
+                    console.log('next called')
                     next();
                 }
             });
         }
     }
-    use(handler: HandlerFunction): Slim {
-        this.middleware.push(handler);
-        return this;
-    }
-    static createRouter(log?: boolean): Slim {
-        return new Slim(log);
+    static createRouter(): Slim {
+        return new Slim();
     }
     private parseQueryString(url: string): object {
         const values = url.split('?');
@@ -126,7 +123,7 @@ class Slim {
         return queryObj;
     }
     private parseBodyJSON(request: SlimRequest): Promise<object> {
-        return new Promise((resolve: any, reject: any) => {
+        return new Promise((resolve, reject) => {
             let body = '';
 
             request.on('data', (data: string) => {
@@ -149,34 +146,39 @@ class Slim {
                     resolve({});
                 }
             });
-        })
+        });
     }
     private handleRequest(req: SlimRequest, res: SlimResponse): void {
         const { method, url } = req;
-        if (this.log) console.log(`${method} ${url}`);
-
-        const baseUrl = url.split('?')[0];
+        const baseUrl = url.split('?').shift();
 
         this.extendRequest(req);
         this.extendResponse(res);
 
-        let matchedRouteHandlers = null;
         const methodRoutes = this.routes[method];
+        let matchedRouteHandlers = null;
 
         if (methodRoutes && methodRoutes[baseUrl]) {
             matchedRouteHandlers = methodRoutes[baseUrl]
         }
 
-        this.runHandlers(req, res, [...this.middleware, ...(matchedRouteHandlers || [])]);
-
-        // res
-        //     .writeHead(404, { 'Content-Type': 'application/json' })
-        //     .end(JSON.stringify({ success: false, result: `No ${method} route found matching ${baseUrl}` }))
+        if (matchedRouteHandlers) {
+            this.runHandlers(req, res, [...this.middleware, ...matchedRouteHandlers]);
+        } else {
+            this.runHandlers(req, res, [...this.middleware]);
+        }
     }
     private runHandlers(req: SlimRequest, res: SlimResponse, handlers: HandlerFunction[]): void {
-        if (handlers && handlers.length > 0) {
-            const handler = handlers.shift();
-            handler(req, res, () => this.runHandlers(req, res, handlers));
+        const handler = handlers.shift();
+
+        if (handler && typeof handler == 'function') {
+            handler(req, res, () => {
+                if (handlers.length == 0) {
+                    res.json({ error: true, result: 'Route not found' }, 404);
+                } else {
+                    this.runHandlers(req, res, handlers);
+                }
+            });
         }
     }
     private createNewServer(): Server {
