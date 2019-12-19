@@ -1,6 +1,6 @@
 import { ServerResponse } from 'http';
 
-export interface SimpleResponse extends ServerResponse {
+export interface SlimResponse extends ServerResponse {
     json: (json: object, statusCode?: number) => void;
     writeHead: any;
 }

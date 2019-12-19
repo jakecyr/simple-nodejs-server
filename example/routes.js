@@ -1,7 +1,7 @@
 
-const Simple = require('../dist/simple.class');
+const Slim = require('../dist/slim.class');
 
-const router = Simple.createRouter();
+const router = Slim.createRouter();
 
 router
     .get('/', (req, res) => {
@@ -12,9 +12,7 @@ router
     })
     .post('/', async (req, res) => {
         const payload = await req.body();
-
-        console.log(payload);
-
+        // echo payload
         res.json(payload);
     })
     .put('/', (req, res) => {

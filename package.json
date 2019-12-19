@@ -7,23 +7,23 @@
         "slim framework",
         "framework"
     ],
-    "main": "dist/simple.class.js",
+    "main": "dist/slim.class.js",
     "scripts": {
         "prepublish": "npm build",
         "build": "tsc",
         "build:watch": "tsc -w",
-        "postbuild": "bundle-js dist/simple.class.js -o dist/bundle.js && npx minify dist/bundle.js > dist/bundle.min.js"
+        "postbuild": "bundle-js dist/slim.class.js -o dist/bundle.js && npx minify dist/bundle.js > dist/bundle.min.js"
     },
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/jakecyr/simple-nodejs-server.git"
+        "url": "git+https://github.com/jakecyr/slim-node-server.git"
     },
     "author": "Jake Cyr",
     "license": "ISC",
     "bugs": {
-        "url": "https://github.com/jakecyr/simple-nodejs-server/issues"
+        "url": "https://github.com/jakecyr/slim-node-server/issues"
     },
-    "homepage": "https://github.com/jakecyr/simple-nodejs-server#readme",
+    "homepage": "https://github.com/jakecyr/slim-node-server#readme",
     "devDependencies": {
         "@types/node": "^12.12.20",
         "@types/qs": "^6.9.0",

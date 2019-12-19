@@ -1,5 +1,5 @@
 import { HandlerFunction } from './handler-function.type';
 
-export interface SimpleRoutes {
+export interface SlimRoutes {
     [index: string]: { [index: string]: HandlerFunction[] }
 }

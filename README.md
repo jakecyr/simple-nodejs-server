@@ -7,14 +7,14 @@
 
 ## Usage
 
-After installing installing the framework, create a new instance of `Simple` and start creating your server:
+After installing installing the framework, create a new instance of `Slim` and start creating your server:
 
 ```javascript
-// import simple framework
-const Simple = require('@jakecyr/simple-node-server');
+// import slim framework
+const Slim = require('@jakecyr/slim-node-server');
 
-// create new simple server with logging
-let app = new Simple(true);
+// create new slim server with logging
+let app = new Slim(true);
 
 app
     .get('/', (req, res) => {
@@ -78,8 +78,6 @@ app.post('/', async (req, res) => {
 Routes can be imported from other files to reduce file size. Example:
 
 ```javascript
-let app = new Simple(true);
-
 app
     .addRoutes('/api', require('./routes/'))
     .listen(8080, '0.0.0.0', () => console.log('Server listening'));

@@ -1,18 +1,17 @@
 import { createServer, Server } from 'http';
 import { parse as parseBody } from 'querystring';
-import { readFile, exists, stat as fileStat, stat } from 'fs';
-
+import { readFile, exists, stat as fileStat } from 'fs';
 import { resolve as resolvePath, normalize as normalizePath, join as joinPath } from 'path';
 
 import { EXT_CONTENT_TYPE } from './file-ext.object';
-import { SimpleRequest } from './simple-request.interface';
-import { SimpleResponse } from './simple-response.interface';
+import { SlimRequest } from './slim-request.interface';
+import { SlimResponse } from './slim-response.interface';
 import { HandlerFunction } from './handler-function.type';
-import { SimpleRoutes } from './simple-routes.interface';
+import { SlimRoutes } from './slim-routes.interface';
 
-class Simple {
+class Slim {
 
-    private routes: SimpleRoutes = {
+    private routes: SlimRoutes = {
         GET: {},
         POST: {},
         PUT: {},
@@ -28,30 +27,30 @@ class Simple {
     listen(port: number, host: string, onListen: () => void): void {
         this.createNewServer().listen(port, host, null, onListen);
     }
-    request(type: string, ...args: any[]): Simple {
+    request(type: string, ...args: any[]): Slim {
         this.addRequest(type, [...args]);
         return this;
     }
-    get(...args: any[]): Simple {
+    get(...args: any[]): Slim {
         this.addRequest('GET', args);
         return this;
     }
-    post(...args: any[]): Simple {
+    post(...args: any[]): Slim {
         this.addRequest('POST', args);
         return this;
     }
-    put(...args: any[]): Simple {
+    put(...args: any[]): Slim {
         this.addRequest('PUT', args);
         return this;
     }
-    delete(...args: any[]): Simple {
+    delete(...args: any[]): Slim {
         this.addRequest('DELETE', args);
         return this;
     }
-    getRoutes(): SimpleRoutes {
+    getRoutes(): SlimRoutes {
         return this.routes;
     }
-    addRoutes(prefix: string, router: Simple): Simple {
+    addRoutes(prefix: string, router: Slim): Slim {
         const newRoutes = router.getRoutes();
 
         for (let method in newRoutes) {
@@ -105,12 +104,12 @@ class Simple {
             });
         }
     }
-    use(handler: HandlerFunction): Simple {
+    use(handler: HandlerFunction): Slim {
         this.middleware.push(handler);
         return this;
     }
-    static createRouter(log?: boolean): Simple {
-        return new Simple(log);
+    static createRouter(log?: boolean): Slim {
+        return new Slim(log);
     }
     private parseQueryString(url: string): object {
         const values = url.split('?');
@@ -126,7 +125,7 @@ class Simple {
 
         return queryObj;
     }
-    private parseBodyJSON(request: SimpleRequest): Promise<object> {
+    private parseBodyJSON(request: SlimRequest): Promise<object> {
         return new Promise((resolve: any, reject: any) => {
             let body = '';
 
@@ -152,7 +151,7 @@ class Simple {
             });
         })
     }
-    private handleRequest(req: SimpleRequest, res: SimpleResponse): void {
+    private handleRequest(req: SlimRequest, res: SlimResponse): void {
         const { method, url } = req;
         if (this.log) console.log(`${method} ${url}`);
 
@@ -174,14 +173,14 @@ class Simple {
         //     .writeHead(404, { 'Content-Type': 'application/json' })
         //     .end(JSON.stringify({ success: false, result: `No ${method} route found matching ${baseUrl}` }))
     }
-    private runHandlers(req: SimpleRequest, res: SimpleResponse, handlers: HandlerFunction[]): void {
+    private runHandlers(req: SlimRequest, res: SlimResponse, handlers: HandlerFunction[]): void {
         if (handlers && handlers.length > 0) {
             const handler = handlers.shift();
             handler(req, res, () => this.runHandlers(req, res, handlers));
         }
     }
     private createNewServer(): Server {
-        return createServer((req: SimpleRequest, res: SimpleResponse) => {
+        return createServer((req: SlimRequest, res: SlimResponse) => {
             this.handleRequest(req, res);
         });
     }
@@ -212,7 +211,7 @@ class Simple {
             throw new Error(`Must specify a path and at least one route handler`);
         }
     }
-    private extendResponse(response: SimpleResponse): SimpleResponse {
+    private extendResponse(response: SlimResponse): SlimResponse {
         response.json = (json: object, statusCode?: number) => {
             response
                 .writeHead(statusCode || 200, { 'Content-Type': 'application/json' })
@@ -221,7 +220,7 @@ class Simple {
 
         return response;
     }
-    private extendRequest(request: SimpleRequest): SimpleRequest {
+    private extendRequest(request: SlimRequest): SlimRequest {
         request.query = () => this.parseQueryString(request.url);
         request.body = () => this.parseBodyJSON(request);
 
@@ -229,4 +228,4 @@ class Simple {
     }
 }
 
-module.exports = Simple;
+module.exports = Slim;
