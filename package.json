@@ -25,8 +25,6 @@
     "homepage": "https://github.com/jakecyr/slim-node-server#readme",
     "devDependencies": {
         "@types/node": "^12.12.20",
-        "@types/qs": "^6.9.0",
-        "bundle-js": "^1.0.3",
-        "minify": "^5.0.0"
+        "@types/qs": "^6.9.0"
     }
 }
