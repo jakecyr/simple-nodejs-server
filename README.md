@@ -72,7 +72,6 @@ app.post('/', async (req, res) => {
 })
 ```
 
-
 ### Router
 
 Routes can be imported from other files to reduce file size. Example:
