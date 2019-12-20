@@ -11,8 +11,7 @@
     "scripts": {
         "prepublish": "npm build",
         "build": "tsc",
-        "build:watch": "tsc -w",
-        "postbuild": "bundle-js dist/slim.class.js -o dist/bundle.js && npx minify dist/bundle.js > dist/bundle.min.js"
+        "build:watch": "tsc -w"
     },
     "repository": {
         "type": "git",

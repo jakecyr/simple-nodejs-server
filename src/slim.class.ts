@@ -230,4 +230,4 @@ class Slim {
     }
 }
 
-module.exports = Slim;
+export = Slim;
