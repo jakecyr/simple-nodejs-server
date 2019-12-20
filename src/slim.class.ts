@@ -99,7 +99,6 @@ class Slim {
                         });
                     });
                 } else {
-                    console.log('next called')
                     next();
                 }
             });
