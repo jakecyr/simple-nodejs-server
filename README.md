@@ -1,5 +1,7 @@
 # Slim Node.js HTTP Server
 
+[![Build Status](https://travis-ci.com/jakecyr/slim-node-server.svg?branch=master)](https://travis-ci.com/jakecyr/slim-node-server)
+
 ## Installation
 
 * Install the npm package `npm install @jakecyr/slim-node-server`
