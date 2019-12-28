@@ -4,18 +4,13 @@ const router = Slim.createRouter();
 
 router
     .get('/', async (_req, res) => {
-
-        try {
-            res.cookie('token', '123456')
-            res.json([
-                { name: 'User 1' },
-                { name: 'User 2' },
-                { name: 'User 3' },
-            ]);
-        } catch (e) {
-            console.error(e)
-            res.json({ error: e })
-        }
+        
+        res.cookie('token', '123456')
+        res.json([
+            { name: 'User 1' },
+            { name: 'User 2' },
+            { name: 'User 3' },
+        ]);
 
     });
 
