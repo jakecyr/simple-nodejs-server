@@ -2,7 +2,7 @@ import { createServer, Server } from 'http';
 import { parse as parseBody } from 'querystring';
 import { readFile, exists, stat as fileStat } from 'fs';
 import { resolve as resolvePath, normalize as normalizePath, join as joinPath } from 'path';
-import * as cookie from 'cookie';
+import { serialize } from 'cookie';
 
 import { EXT_CONTENT_TYPE } from './file-ext.object';
 import { SlimRequest } from './slim-request.interface';
@@ -214,8 +214,8 @@ class Slim {
         }
     }
     private extendResponse(response: SlimResponse): SlimResponse {
-        response.cookie = (name: string, value: string, options={}) => {
-            response.setHeader('Set-Cookie', cookie.serialize(name, String(value), options))
+        response.cookie = (name: string, value: string, options = {}) => {
+            response.setHeader('Set-Cookie', serialize(name, String(value), options))
         };
 
         response.json = (json: object, statusCode?: number) => {
