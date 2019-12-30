@@ -8,6 +8,14 @@ const host = '0.0.0.0';
 let app = new Slim();
 
 app
+    // add logger for all requests
+    .use((req, res, next) => {
+        console.log(`${req.method} ${req.url}`);
+        next();
+    })
+
+    // server static files from the public folder
     .use(Slim.serveStatic(path.join(__dirname, 'public'), true))
-    .addRoutes('/api', require('./routes'))
+
+    // start listening on the specified host / port
     .listen(port, host, () => console.log(`Server listening on ${host}:${port}`));
