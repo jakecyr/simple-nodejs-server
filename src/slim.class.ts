@@ -50,8 +50,8 @@ class Slim {
     addRoutes(prefix: string, router: Slim): Slim {
         const newRoutes = router.getRoutes();
 
-        for (let method in newRoutes) {
-            for (let url in newRoutes[method]) {
+        for (const method in newRoutes) {
+            for (const url in newRoutes[method]) {
                 const path = this.standardizePath(prefix + url);
                 this.routes[method][path] = newRoutes[method][url];
             }
