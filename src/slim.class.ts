@@ -52,7 +52,7 @@ class Slim {
 
         for (let method in newRoutes) {
             for (let url in newRoutes[method]) {
-                const path = prefix + url;
+                const path = this.standardizePath(prefix + url);
                 this.routes[method][path] = newRoutes[method][url];
             }
         }
@@ -150,7 +150,9 @@ class Slim {
     }
     private handleRequest(req: SlimRequest, res: SlimResponse): void {
         const { method, url } = req;
-        const baseUrl = url.split('?').shift();
+        const baseUrl = this.standardizePath(url.split('?').shift());
+
+        console.log(baseUrl, this.routes)
 
         this.extendRequest(req);
         this.extendResponse(res);
@@ -208,10 +210,17 @@ class Slim {
         }
 
         if (path !== undefined && path !== null && handlers.length > 0) {
+            path = this.standardizePath(path);
             this.routes[type][path] = handlers;
         } else {
             throw new Error(`Must specify a path and at least one route handler`);
         }
+    }
+    private standardizePath(path: string): string {
+        return '/' + (path || '')
+            .split('/')
+            .filter(a => a !== '/' && a !== '')
+            .join('/');
     }
     private extendResponse(response: SlimResponse): SlimResponse {
         response.cookie = (name: string, value: string, options = {}) => {

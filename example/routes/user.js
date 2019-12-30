@@ -15,6 +15,6 @@ router
             { name: 'User 2' },
             { name: 'User 3' },
         ]);
-    })
+    });
 
 module.exports = router;

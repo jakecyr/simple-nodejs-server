@@ -17,5 +17,7 @@ app
     // server static files from the public folder
     .use(Slim.serveStatic(path.join(__dirname, 'public'), true))
 
+    .addRoutes('/api', require('./routes/index'))
+
     // start listening on the specified host / port
     .listen(port, host, () => console.log(`Server listening on ${host}:${port}`));
