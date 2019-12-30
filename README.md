@@ -4,7 +4,7 @@
 
 ## Installation
 
-* Install the npm package `npm install @jakecyr/slim-node-server`
+* Install the npm package `npm install slim-node-server`
 * Import the module to your project (see example below)
 
 ## Usage
@@ -13,7 +13,7 @@ After installing installing the framework, create a new instance of `Slim` and s
 
 ```javascript
 // import slim framework
-const Slim = require('@jakecyr/slim-node-server');
+const Slim = require('slim-node-server');
 
 // create new slim server with logging
 let app = new Slim(true);
