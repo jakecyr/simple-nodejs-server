@@ -152,8 +152,6 @@ class Slim {
         const { method, url } = req;
         const baseUrl = this.standardizePath(url.split('?').shift());
 
-        console.log(baseUrl, this.routes)
-
         this.extendRequest(req);
         this.extendResponse(res);
 
