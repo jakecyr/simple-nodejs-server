@@ -109,7 +109,7 @@ class Slim {
         return new Slim();
     }
     private parseQueryString(url: string): object {
-        const values = url.split('?');
+        const values = url.split('?').pop().split('&');
         const queryObj: { [index: string]: string } = {};
 
         for (let value of values) {
