@@ -231,6 +231,12 @@ class Slim {
                 .end(JSON.stringify(json))
         };
 
+        response.redirect = (url: string) => {
+            response
+                .writeHead(302, { Location: url })
+                .end();
+        };
+
         return response;
     }
     private extendRequest(request: SlimRequest): SlimRequest {
