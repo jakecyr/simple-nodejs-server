@@ -5,7 +5,7 @@ import { resolve as resolvePath, normalize as normalizePath, join as joinPath } 
 import { serialize } from 'cookie';
 
 import { EXT_CONTENT_TYPE } from './file-ext.object';
-import { SlimRequest } from './slim-request.interface';
+import { SlimRequest, QueryObject } from './slim-request.interface';
 import { SlimResponse } from './slim-response.interface';
 import { HandlerFunction } from './handler-function.type';
 import { SlimRoutes } from './slim-routes.interface';
@@ -108,9 +108,9 @@ class Slim {
     static createRouter(): Slim {
         return new Slim();
     }
-    private parseQueryString(url: string): object {
+    private parseQueryString(url: string): QueryObject {
         const values = url.split('?').pop().split('&');
-        const queryObj: { [index: string]: string } = {};
+        const queryObj = {} as QueryObject;
 
         for (let value of values) {
             const pieces: string[] = value.split('=');
@@ -242,7 +242,6 @@ class Slim {
     private extendRequest(request: SlimRequest): SlimRequest {
         request.query = () => this.parseQueryString(request.url);
         request.body = () => this.parseBodyJSON(request);
-
         return request;
     }
 }
