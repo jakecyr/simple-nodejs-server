@@ -1,8 +1,8 @@
 import { IncomingMessage } from 'http';
 
 export interface SlimRequest extends IncomingMessage {
-    query: () => object;
-    body: () => Promise<object>;
+    query: <Query>() => Query;
+    body: <Body>() => Promise<Body>;
     url: string;
     method: string;
 }
