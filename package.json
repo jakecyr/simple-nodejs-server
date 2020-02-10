@@ -1,6 +1,6 @@
 {
     "name": "slim-node-server",
-    "version": "1.1.4",
+    "version": "1.1.5",
     "description": "Simple and slim Node.js HTTP server",
     "keywords": [
         "http-server",
